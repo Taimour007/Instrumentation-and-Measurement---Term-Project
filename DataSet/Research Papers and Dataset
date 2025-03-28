@@ -1,1 +1,5 @@
-This is where the DATASET was taken from
+Data Acquisition & Processing
+
+The dataset used in this study was sourced from two research papers, serving as the foundation for both data extraction and mathematical model formulation. The equations and relationships used in the analysis were inspired by the methodologies outlined in these papers.
+
+To enhance the dataset's robustness, linear regression was employed to expand the machining data to 5000 values, ensuring a more comprehensive and statistically significant dataset for analysis. This approach facilitated improved accuracy in predictive modeling and statistical validation.
