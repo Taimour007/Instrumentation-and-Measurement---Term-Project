@@ -1,0 +1,14 @@
+% Ensure categorical binning for ap and f
+num_bins_ap = 8; % Adjust based on distribution
+num_bins_f = 8; 
+
+ap_binned = discretize(ap, num_bins_ap);
+f_binned = discretize(f, num_bins_f);
+
+% Two-Way ANOVA
+[p, tbl, stats] = anovan(Ra, {ap_binned, f_binned}, 'model', 'interaction', ...
+    'varnames', {'Depth of Cut (ap)', 'Feed Rate (f)'});
+
+% Display Results
+disp('Two-Way ANOVA Results:');
+disp(tbl);
