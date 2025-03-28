@@ -1,0 +1,7 @@
+% Perform Two-Way ANOVA for Cutting Speed (vc) and Tool Wear on Ra
+
+[p, tbl, stats] = anovan(Ra, {vc_binned, Tool_Wear_binned}, 'model', 'interaction', 'varnames', {'Cutting Speed (vc)', 'Tool Wear'});
+
+% Display table in readable format
+disp('Two-Way ANOVA Results:');
+disp(tbl);
