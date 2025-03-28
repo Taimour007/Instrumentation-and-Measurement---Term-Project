@@ -1,0 +1,36 @@
+% Perform Two-Way ANOVA on Ra with factors f and vc
+
+% Ensure data is properly binned (if not already)
+num_bins_f = 8;
+num_bins_vc = 10;
+
+f_binned = discretize(f_selected, num_bins_f);
+vc_binned = discretize(vc_selected, num_bins_vc);
+
+% Convert to categorical
+f_binned = categorical(f_binned);
+vc_binned = categorical(vc_binned);
+
+% Create Factor Groups
+factor_groups = {f_binned, vc_binned};
+
+% Perform Two-Way ANOVA
+[p, tbl, stats] = anovan(Ra_selected, factor_groups, 'model', 'interaction', 'varnames', {'Feed Rate (f)', 'Cutting Speed (vc)'});
+
+% Display results
+disp('Two-Way ANOVA Results:');
+disp(tbl);
+
+% Plot interaction effects
+figure;
+interactionplot(Ra_selected, {f_binned, vc_binned});
+xlabel('Feed Rate (f)');
+ylabel('Surface Roughness (Ra)');
+title('Interaction Effect of Feed Rate & Cutting Speed on Ra');
+
+% Boxplot for visualization
+figure;
+boxplot(Ra_selected, {f_binned, vc_binned}, 'FactorGap', 10, 'LabelOrientation', 'inline');
+xlabel('Factor Combination');
+ylabel('Surface Roughness (Ra)');
+title('Two-Way ANOVA Boxplot for Ra');
