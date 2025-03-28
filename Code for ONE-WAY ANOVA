@@ -1,0 +1,39 @@
+% Define a threshold for selecting data
+threshold_std_vc = 0.5 * std(vc); % Use half the standard deviation as a filtering criterion
+threshold_std_f = 0.5 * std(f);
+
+% Find indices where values are within an optimal range
+vc_filtered_idx = (vc > mean(vc) - threshold_std_vc) & (vc < mean(vc) + threshold_std_vc);
+f_filtered_idx = (f > mean(f) - threshold_std_f) & (f < mean(f) + threshold_std_f);
+
+% Apply the filter to the dataset
+filtered_indices = vc_filtered_idx & f_filtered_idx;
+vc_selected = vc(filtered_indices);
+f_selected = f(filtered_indices);
+Ra_selected = Ra(filtered_indices);
+
+% Check new sizes
+disp(['New Size of vc: ', num2str(length(vc_selected))]);
+disp(['New Size of f: ', num2str(length(f_selected))]);
+New Size of vc: 406
+New Size of f: 406
+>> % Bin the new selected data
+num_bins_vc = 10;
+num_bins_f = 8;
+
+vc_binned = discretize(vc_selected, num_bins_vc);
+f_binned = discretize(f_selected, num_bins_f);
+
+% Perform ANOVA
+p_values = [
+    anova1(Ra_selected, vc_binned, 'off');
+    anova1(Ra_selected, f_binned, 'off');
+    anova1(Ra, ap_binned, 'off'); % Keep original ap
+    anova1(Ra, Tool_Wear_binned, 'off'); % Keep original tool wear
+];
+
+disp('ANOVA p-values for Ra after filtering:');
+disp(['Cutting Speed (vc): ', num2str(p_values(1))]);
+disp(['Feed Rate (f): ', num2str(p_values(2))]);
+disp(['Depth of Cut (ap): ', num2str(p_values(3))]);
+disp(['Tool Wear: ', num2str(p_values(4))]);
