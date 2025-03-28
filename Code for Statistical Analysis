@@ -1,0 +1,70 @@
+%% Load the Dataset
+data = readtable('generated_machining_data.csv'); 
+
+%% Define Factors for Analysis
+factors = {'f', 'ap', 'vc', 'Ra', 'Rz'}; % Variables of Interest
+factor_units = {'Feed Rate (mm/rev)', 'Depth of Cut (mm)', 'Cutting Speed (m/min)', ...
+                'Surface Roughness (Ra, µm)', 'Surface Roughness (Rz, µm)'};
+
+%% Initialize Table for Statistical Summary
+stats_table = table();
+
+%% Compute and Display Statistical Metrics
+fprintf('================= STATISTICAL ANALYSIS =================\n');
+for i = 1:length(factors)
+    var_name = factors{i};
+    values = data.(var_name); % Extract Column Data
+    
+    % Compute Statistics
+    mean_val = mean(values);
+    median_val = median(values);
+    std_dev = std(values);
+    variance_val = var(values);
+    skewness_val = skewness(values);
+    kurtosis_val = kurtosis(values);
+    range_val = range(values);
+    IQR_val = iqr(values);  % Interquartile Range (Q3 - Q1)
+    
+    % Store in Table
+    stats_table.(var_name) = [mean_val; median_val; std_dev; variance_val; ...
+                              skewness_val; kurtosis_val; range_val; IQR_val];
+    
+    % Print Results
+    fprintf('%s:\n', var_name);
+    fprintf('Mean: %.4f, Median: %.4f, Std Dev: %.4f, Variance: %.4f\n', mean_val, median_val, std_dev, variance_val);
+    fprintf('Skewness: %.4f, Kurtosis: %.4f, Range: %.4f, IQR: %.4f\n', skewness_val, kurtosis_val, range_val, IQR_val);
+    fprintf('-------------------------------------------------------\n');
+    
+    % ======== INDIVIDUAL GRAPH PLOTTING ========
+    figure;
+    
+    % Plot Histogram + Normal Fit Curve
+    histogram(values, 'Normalization', 'pdf', 'FaceColor', [0.2 0.6 0.8], 'EdgeColor', 'k'); 
+    hold on;
+    x_vals = linspace(min(values), max(values), 100);
+    y_vals = normpdf(x_vals, mean(values), std(values));
+    plot(x_vals, y_vals, 'r-', 'LineWidth', 2); % Normal Distribution
+    
+    % Define Labels & Title
+    title(sprintf('Bell Curve of %s', factor_units{i}), 'FontSize', 14, 'FontWeight', 'Bold');
+    xlabel(factor_units{i}, 'FontSize', 12);
+    ylabel('Probability Density', 'FontSize', 12);
+    grid on;
+    
+    % Save Graph as PNG
+    filename = sprintf('Bell_Curve_%s.png', factors{i});
+    saveas(gcf, filename);
+    fprintf('Graph saved as %s\n', filename);
+    
+    hold off;
+end
+
+% Add Row Names to the Table
+stats_table.Properties.RowNames = {'Mean', 'Median', 'Std Dev', 'Variance', ...
+                                   'Skewness', 'Kurtosis', 'Range', 'IQR'};
+
+% Display Final Statistical Summary Table
+disp(stats_table);
+
+
+%THIS WAS ALL WRITTEN IN MATLAB ENVIRONMENT
