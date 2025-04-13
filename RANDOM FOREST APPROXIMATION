@@ -1,0 +1,31 @@
+%% Load the Dataset
+data = readtable('synthetic_machining_data.csv');  % Use your dataset file
+
+%% Prepare Features and Target Variables
+X = data(:, {'Feed_Rate', 'Depth_Cut', 'Tool_Wear'}); % Inputs
+Y = data.Ra;  % Output (Surface Roughness Ra)
+
+%% Split Data into Training (80%) and Testing (20%)
+cv = cvpartition(height(data), 'HoldOut', 0.2);
+X_train = X(training(cv), :);
+Y_train = Y(training(cv), :);
+X_test = X(test(cv), :);
+Y_test = Y(test(cv), :);
+
+%% Train a Random Forest Model
+RF_model = fitrensemble(X_train, Y_train, 'Method', 'Bag');  % Random Forest
+
+%% Predict on Test Set
+Y_pred = predict(RF_model, X_test);
+
+%% Evaluate Model
+MAE = mean(abs(Y_pred - Y_test));
+RMSE = sqrt(mean((Y_pred - Y_test).^2));
+R2 = corr(Y_pred, Y_test)^2;
+
+fprintf('Model Performance: MAE = %.4f, RMSE = %.4f, R^2 = %.4f\n', MAE, RMSE, R2);
+
+%% Use Model to Predict Ra for New Parameters
+new_params = [0.2, 1.0, 0.3]; % [Feed Rate, Depth Cut, Tool Wear]
+predicted_Ra = predict(RF_model, new_params);
+fprintf('Predicted Ra for new conditions: %.4f\n', predicted_Ra);
